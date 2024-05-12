@@ -1,0 +1,9 @@
+[submodule "contrib/SDL"]
+	path = contrib/SDL
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "contrib/imgui"]
+	path = contrib/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "contrib/googletest"]
+	path = contrib/googletest
+	url = https://github.com/google/googletest.git
