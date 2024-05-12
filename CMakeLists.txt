@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.14)
 
 #main project
-project (litecpu)
+project (LiteCPU)
 
 set(VERSION_MAJOR "0" )
 set(VERSION_MINOR "0" )
@@ -21,7 +21,7 @@ set_property( GLOBAL PROPERTY USE_FOLDERS ON)
 add_subdirectory(contrib)
 add_subdirectory(src)
 
-#set_property(TARGET fmt PROPERTY FOLDER "contrib")
+set_property(TARGET fmt PROPERTY FOLDER "contrib")
 set_property(TARGET gtest PROPERTY FOLDER "contrib")
 set_property(TARGET gtest_main PROPERTY FOLDER "contrib")
 set_property(TARGET gmock PROPERTY FOLDER "contrib")

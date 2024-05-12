@@ -1,4 +1,5 @@
 
+add_subdirectory(fmt)
 add_subdirectory(googletest)
 add_subdirectory(SDL)
 
@@ -24,8 +25,8 @@ add_library(IMGUI
 )
 
 target_include_directories(IMGUI 	
-    PRIVATE ${litecpu_SOURCE_DIR}/contrib/imgui/	
-    PRIVATE ${litecpu_SOURCE_DIR}/contrib/SDL/include
+    PRIVATE ${LiteCPU_SOURCE_DIR}/contrib/imgui/	
+    PRIVATE ${LiteCPU_SOURCE_DIR}/contrib/SDL/include
 )
 
 target_link_libraries(IMGUI)
