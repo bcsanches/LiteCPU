@@ -1,5 +1,9 @@
 
-add_executable(Runner main.cpp )
+add_executable(Runner 
+	main.cpp 
+	MainApp.cpp
+	MainApp.h
+)
 
 target_compile_features(Runner PUBLIC cxx_std_20)    
 

@@ -1,5 +1,4 @@
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_render.h>
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -13,6 +12,8 @@
 #include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_sdlrenderer3.h"
 #include "imgui_internal.h"
+
+#include "MainApp.h"
 
 void LogInit(const char *fileName)
 {	
@@ -96,6 +97,8 @@ int main()
 	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer3_Init(renderer);
 
+	MainApp app;
+
 	while (!g_fExitRequested)
 	{
 		SDL_Event event;
@@ -110,7 +113,7 @@ int main()
 
 			if (event.type == SDL_EVENT_KEY_DOWN)
 			{
-
+				app.HandleEvent(event.key);
 			}
 		}
 
@@ -119,7 +122,10 @@ int main()
 		ImGui_ImplSDL3_NewFrame();
 		ImGui::NewFrame();
 		
-		ImGui::ShowDemoWindow(nullptr);
+		if (!app.Display())
+			g_fExitRequested = true;
+
+		app.Run();
 
 		// Rendering
 		ImGui::Render();
