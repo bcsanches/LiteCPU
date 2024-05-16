@@ -183,6 +183,8 @@ bool MainApp::Display()
 
 	ImGui::End();	
 
+	m_wCPU.Display();
+
 	if (m_fShowAbout)
 		ShowAboutWindow(&m_fShowAbout);
 

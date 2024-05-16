@@ -14,6 +14,8 @@
 
 #include "imgui.h"
 
+#include "CPUWidget.h"
+
 #define LITECPU_DISABLE_CLASS_COPY_AND_MOVE(X)	\
 	X(const X &) = delete;						\
 	X(X &&) = delete;							\
@@ -39,6 +41,8 @@ class MainApp
 		//Gui states
 		// 
 		ImVec2	m_vec2ViewportSize = { 0, 0 };
+
+		CPUWidget	m_wCPU;
 
 		bool	m_fShowAbout = false;
 		bool	m_fShowDemo = false;

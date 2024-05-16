@@ -1,7 +1,7 @@
 
 add_subdirectory(fmt)
 add_subdirectory(googletest)
-add_subdirectory(SDL)
+add_subdirectory(SDL EXCLUDE_FROM_ALL)
 
 add_compile_definitions(IMGUI_DEFINE_MATH_OPERATORS)
 

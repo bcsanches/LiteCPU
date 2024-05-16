@@ -15,6 +15,8 @@
 
 #include "MainApp.h"
 
+//https://github.com/ocornut/imgui_club
+
 void LogInit(const char *fileName)
 {	
 	std::vector<spdlog::sink_ptr> sinks;

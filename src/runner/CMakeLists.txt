@@ -1,5 +1,7 @@
 
 add_executable(Runner 
+	CPUWidget.cpp
+	CPUWidget.h
 	main.cpp 
 	MainApp.cpp
 	MainApp.h
@@ -15,7 +17,7 @@ target_include_directories(Runner
 
 if(WIN32)
     target_link_libraries(Runner   
-        PRIVATE SDL3-shared    
+        PRIVATE SDL3::SDL3   
         PRIVATE IMGUI
 	)
 
@@ -26,7 +28,7 @@ if(WIN32)
 else(WIN32)
 
 	target_link_libraries(Runner         
-		PRIVATE SDL3-shared     
+		PRIVATE SDL3::SDL3     
         PRIVATE IMGUI
 	)
 
