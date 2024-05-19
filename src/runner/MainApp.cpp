@@ -100,7 +100,8 @@ MainApp::MainApp()
 	m_wDocumentWidget.SetDocument(&m_clDocument);
 #endif
 
-	m_tCPU.FillMem(0xEA);
+	//m_tCPU.FillMem(0xEA);
+	m_tCPU.LoadRom("../BenEater/blink.bin", 0x8000);
 
 	m_wCPU.SetCPU(&m_tCPU);
 }

@@ -15,12 +15,13 @@
 
 namespace LiteCPU
 {
-	constexpr auto RAM_SIZE = 0xFFFF;
+	constexpr auto RAM_SIZE = 0xFFFF + 1;
 
 	enum class States
 	{
 		RESET,
-		RUN
+		RUN,
+		HALT
 	};
 
 	class MemoryBus
@@ -64,9 +65,26 @@ namespace LiteCPU
 
 			void Reset();
 
+			inline uint8_t GetOpCode() const noexcept
+			{
+				return m_uOpCode;
+			}
+
+			const char *GetOpCodeName() const noexcept;
+
+			inline uint8_t GetStage() const noexcept
+			{
+				return m_uStage;
+			}
+
 		private:
 			void ResetTick();
 			void RunTick();
+
+			inline void ClearFlag(uint8_t bit) noexcept;
+			inline void SetFlag(uint8_t bit) noexcept;
+
+			inline void UpdateRegisterFlags(uint8_t registerValue) noexcept;
 
 		private:
 			MemoryBus m_tMemory;
@@ -75,6 +93,8 @@ namespace LiteCPU
 
 			uint8_t m_uStage = 0;
 			uint8_t m_uOpCode;
+
+			uint16_t m_uBus;
 	};
 
 

@@ -10,6 +10,8 @@
 
 #include "CPUWidget.h"
 
+#include <array>
+
 #include <fmt/format.h>
 
 #include "imgui.h"
@@ -24,6 +26,8 @@ void CPUWidget::Display()
 
 	if (ImGui::Begin("CPU Controller"))
 	{	
+		fmt::memory_buffer input;
+
 		if (ImGui::BeginTable("CPU", 7, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoSavedSettings))
 		{
 			ImGui::TableSetupColumn("PC", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 58);
@@ -60,34 +64,54 @@ void CPUWidget::Display()
 
 			ImGui::TableNextRow();
 #endif
-
-			char input[10] = "0000";
-
-			auto pc_data = fmt::format("{:4X}", m_pCPU->PC);
+			
+			fmt::format_to_n(std::back_inserter(input), 4, "{:04X}", m_pCPU->PC);
+			input[4] = '\0';
 
 			ImGui::TableNextColumn();
-			ImGui::InputText("##PC", &pc_data[0], 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+			ImGui::InputText("##PC", &input[0], 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
 
-			strcpy(input, "00");
+			input.clear();
+			fmt::format_to_n(std::back_inserter(input), 2, "{:02X}", m_pCPU->A);
+			input[2] = '\0';			
 
 			ImGui::TableNextColumn();			
-			ImGui::InputText("##AC", input, 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+			ImGui::InputText("##AC", &input[0], 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+
+			input.clear();
+			fmt::format_to_n(std::back_inserter(input), 2, "{:02X}", m_pCPU->X);
+			input[2] = '\0';
 
 			ImGui::TableNextColumn();
-			ImGui::InputText("##XR", input, 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+			ImGui::InputText("##XR", &input[0], 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+
+			input.clear();
+			fmt::format_to_n(std::back_inserter(input), 2, "{:02X}", m_pCPU->Y);
+			input[2] = '\0';
 
 			ImGui::TableNextColumn();
-			ImGui::InputText("##YR", input, 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+			ImGui::InputText("##YR", &input[0], 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+
+			input.clear();
+			fmt::format_to_n(std::back_inserter(input), 2, "{:02X}", m_pCPU->F);
+			input[2] = '\0';
 
 			ImGui::TableNextColumn();
-			ImGui::InputText("##SR", input, 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+			ImGui::InputText("##SR", &input[0], 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+
+			input.clear();
+			fmt::format_to_n(std::back_inserter(input), 2, "{:02X}", m_pCPU->S);
+			input[2] = '\0';
 
 			ImGui::TableNextColumn();
-			ImGui::InputText("##SP", input, 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+			ImGui::InputText("##SP", &input[0], 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
 
-			strcpy(input, "00000000");
+			input.clear();
+			fmt::format_to_n(std::back_inserter(input), 8, "{:08b}", m_pCPU->F);
+			input[8] = '\0';
+
 			ImGui::TableNextColumn();
-			ImGui::InputText("##FLAGS", input, 9, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+			ImGui::InputText("##FLAGS", &input[0], 9, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
 			
 			ImGui::EndTable();
 		}
@@ -112,6 +136,19 @@ void CPUWidget::Display()
 
 		if (ImGui::Button("Reset"))
 			m_pCPU->Reset();
+
+		ImGui::SameLine();
+
+		input.clear();
+		fmt::format_to_n(std::back_inserter(input), 2, "{:2X}", m_pCPU->GetOpCode());
+		input[2] = '\0';
+
+		ImGui::Text(&input[0]);
+		//ImGui::InputText("OpCodeId", &input[0], 3, ImGuiInputTextFlags_ReadOnly);
+
+		ImGui::SameLine();
+		
+		ImGui::Text(m_pCPU->GetOpCodeName());
 	}
 
 	ImGui::End();
