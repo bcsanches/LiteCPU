@@ -143,12 +143,13 @@ void CPUWidget::Display()
 		fmt::format_to_n(std::back_inserter(input), 2, "{:2X}", m_pCPU->GetOpCode());
 		input[2] = '\0';
 
-		ImGui::Text(&input[0]);
-		//ImGui::InputText("OpCodeId", &input[0], 3, ImGuiInputTextFlags_ReadOnly);
+		ImGui::Text(&input[0]);		
+
+		ImGui::SameLine();		
+		ImGui::Text(m_pCPU->GetOpCodeName());
 
 		ImGui::SameLine();
-		
-		ImGui::Text(m_pCPU->GetOpCodeName());
+		ImGui::Text("Stage: %s - %d", m_pCPU->GetStateName(), m_pCPU->GetStage());
 	}
 
 	ImGui::End();

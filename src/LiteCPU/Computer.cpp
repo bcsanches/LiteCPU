@@ -42,6 +42,24 @@ namespace LiteCPU
 		//empty
 	}
 
+	const char *CPU::GetStateName() const noexcept
+	{
+		switch (m_kState)
+		{
+			case States::RESET:
+				return "Reset";
+
+			case States::RUN:
+				return "Run";
+
+			case States::HALT:
+				return "Halt";
+
+			default:
+				return "???";
+		}
+	}
+
 	const char *CPU::GetOpCodeName() const noexcept
 	{
 		switch (m_uOpCode)

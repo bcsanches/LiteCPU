@@ -71,6 +71,7 @@ namespace LiteCPU
 			}
 
 			const char *GetOpCodeName() const noexcept;
+			const char *GetStateName() const noexcept;
 
 			inline uint8_t GetStage() const noexcept
 			{
