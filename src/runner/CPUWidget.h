@@ -10,6 +10,11 @@
 
 #pragma once
 
+namespace LiteCPU
+{
+	class CPU;
+}
+
 
 class CPUWidget
 {
@@ -19,5 +24,11 @@ class CPUWidget
 
 		~CPUWidget() = default;
 
+		void SetCPU(LiteCPU::CPU *cpu) noexcept
+		{
+			m_pCPU = cpu;
+		}
+
 	private:
+		LiteCPU::CPU *m_pCPU = nullptr;
 };

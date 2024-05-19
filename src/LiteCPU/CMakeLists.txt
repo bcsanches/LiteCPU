@@ -6,8 +6,15 @@ add_library(
 )
 
 target_link_libraries(LiteCPU
-        
+	fmt        
 )
+
+target_compile_features(LiteCPU PUBLIC cxx_std_20)    
+
+target_include_directories(LiteCPU
+    PRIVATE ${LiteCPU_SOURCE_DIR}/contrib/spdlog/include
+)
+
 
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)       
 

@@ -10,10 +10,16 @@
 
 #include "CPUWidget.h"
 
+#include <fmt/format.h>
+
 #include "imgui.h"
+
+#include "Computer.h"
 
 void CPUWidget::Display()
 {
+	assert(m_pCPU);
+
 	ImGui::SetNextWindowSize(ImVec2{393, 100}, ImGuiCond_Always);
 
 	if (ImGui::Begin("CPU Controller"))
@@ -57,8 +63,10 @@ void CPUWidget::Display()
 
 			char input[10] = "0000";
 
+			auto pc_data = fmt::format("{:4X}", m_pCPU->PC);
+
 			ImGui::TableNextColumn();
-			ImGui::InputText("##PC", input, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+			ImGui::InputText("##PC", &pc_data[0], 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
 
 			strcpy(input, "00");
 
@@ -97,10 +105,13 @@ void CPUWidget::Display()
 		ImGui::Button("Stop");
 		ImGui::SameLine();
 
-		ImGui::Button("Step");
+		if (ImGui::Button("Step"))
+			m_pCPU->Tick();
+
 		ImGui::SameLine();
 
-		ImGui::Button("Reset");		
+		if (ImGui::Button("Reset"))
+			m_pCPU->Reset();
 	}
 
 	ImGui::End();

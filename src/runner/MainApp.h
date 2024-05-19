@@ -15,6 +15,7 @@
 #include "imgui.h"
 
 #include "CPUWidget.h"
+#include "Computer.h"
 
 #define LITECPU_DISABLE_CLASS_COPY_AND_MOVE(X)	\
 	X(const X &) = delete;						\
@@ -36,6 +37,8 @@ class MainApp
 		void HandleEvent(const SDL_KeyboardEvent &key);			
 
 	private:		
+		LiteCPU::CPU m_tCPU;
+
 		//
 		//
 		//Gui states

@@ -10,8 +10,74 @@
 
 #pragma once
 
+#include <cstdint>
+#include <filesystem>
+
 namespace LiteCPU
 {
+	constexpr auto RAM_SIZE = 0xFFFF;
+
+	enum class States
+	{
+		RESET,
+		RUN
+	};
+
+	class MemoryBus
+	{
+		public:
+			inline const uint8_t operator[](uint16_t index) const noexcept
+			{
+				return m_uRam[index];
+			}
+
+			inline uint8_t &operator[](uint16_t index) noexcept
+			{
+				return m_uRam[index];
+			}
+
+			bool LoadRom(const std::filesystem::path &path, uint16_t baseAddress);
+			void FillMem(uint8_t value);
+
+		private:
+			uint8_t m_uRam[RAM_SIZE];
+	};
+
+	class CPU
+	{
+		public:
+			uint16_t PC;
+			uint8_t A;
+			uint8_t X;
+			uint8_t Y;
+			uint8_t S;
+
+			uint8_t F;
+
+			CPU();
+
+			void Tick();
+
+			bool LoadRom(const std::filesystem::path &path, uint16_t baseAddress);
+
+			void FillMem(uint8_t value);
+
+			void Reset();
+
+		private:
+			void ResetTick();
+			void RunTick();
+
+		private:
+			MemoryBus m_tMemory;
+
+			States m_kState = States::RESET;
+
+			uint8_t m_uStage = 0;
+			uint8_t m_uOpCode;
+	};
+
+
 	class Computer
 	{
 
