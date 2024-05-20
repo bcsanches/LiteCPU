@@ -22,7 +22,7 @@ void CPUWidget::Display()
 {
 	assert(m_pCPU);
 
-	ImGui::SetNextWindowSize(ImVec2{473, 100}, ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2{473, 0}, ImGuiCond_Always);
 
 	if (ImGui::Begin("CPU Controller"))
 	{	
@@ -131,19 +131,30 @@ void CPUWidget::Display()
 		ImGui::Separator();
 #endif
 
-		ImGui::Button("Start");
+		if (ImGui::Button("Start"))
+		{
+			m_fPaused = false;
+		}
+
 		ImGui::SameLine();		
 
-		ImGui::Button("Stop");
+		if (ImGui::Button("Stop"))
+		{
+			m_fPaused = true;
+		}
+
 		ImGui::SameLine();
 
-		if (ImGui::Button("Step"))
+		if (ImGui::Button("Step") && m_fPaused)
 			m_pCPU->Tick();
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Reset"))
+		{
 			m_pCPU->Reset();
+			m_fPaused = true;
+		}
 
 		ImGui::SameLine();
 
@@ -158,7 +169,25 @@ void CPUWidget::Display()
 
 		ImGui::SameLine();
 		ImGui::Text("Stage: %s - %d", m_pCPU->GetStateName(), m_pCPU->GetStage());
+		
+		if (ImGui::InputInt("Ticks per second", &m_iTicks))
+		{
+			m_iTicks = std::max(0, m_iTicks);
+		}
 	}
 
 	ImGui::End();
+
+	if (!m_fPaused)
+	{
+		auto &io = ImGui::GetIO();
+
+		m_fpTicksToRun += io.DeltaTime * m_iTicks;
+
+		while (m_fpTicksToRun > 1)
+		{
+			m_pCPU->Tick();
+			m_fpTicksToRun -= 1;
+		}
+	}
 }

@@ -30,5 +30,10 @@ class CPUWidget
 		}
 
 	private:
-		LiteCPU::CPU *m_pCPU = nullptr;
+		LiteCPU::CPU	*m_pCPU = nullptr;
+
+		int				m_iTicks = 20;
+		float			m_fpTicksToRun = 0;
+
+		bool			m_fPaused = true;
 };
