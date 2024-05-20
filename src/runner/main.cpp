@@ -17,6 +17,9 @@
 
 //https://github.com/ocornut/imgui_club
 
+
+//http://txt3.de/ -> make those work?
+
 void LogInit(const char *fileName)
 {	
 	std::vector<spdlog::sink_ptr> sinks;

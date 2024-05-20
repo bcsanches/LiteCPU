@@ -16,11 +16,16 @@
 
 enum OpCodes
 {
-	JMP = 0x4C,
-	ROR = 0x6A,
-	STA = 0x8D,
-	LDA = 0xA9,
-	NOP = 0xEA
+	JSR		= 0x20,
+	PHA		= 0x48,
+	JMP		= 0x4C,
+	ROR		= 0x6A,
+	STA		= 0x8D,
+	TXS		= 0x9A,
+	LDX		= 0xA2,
+	LDA		= 0xA9,
+	LDA_ABS = 0xAD,
+	NOP		= 0xEA
 };
 
 enum BitFlags
@@ -64,6 +69,12 @@ namespace LiteCPU
 	{
 		switch (m_uOpCode)
 		{
+			case JSR:
+				return "JSR";
+
+			case PHA:
+				return "PHA";
+
 			case JMP:
 				return "JMP";
 
@@ -73,8 +84,17 @@ namespace LiteCPU
 			case STA:
 				return "STA";
 
-			case LDA:
-				return "LDA";
+			case TXS:
+				return "TXS";
+
+			case LDX:
+				return "LDX";
+
+			case LDA:			
+				return "LDA";			
+
+			case LDA_ABS:
+				return "LDA_ABS";				
 
 			case NOP:
 				return "NOP";
@@ -122,7 +142,19 @@ namespace LiteCPU
 	}
 
 
-	inline void UpdateRegisterFlags(uint8_t registerValue, uint8_t bit) noexcept;
+	inline void CPU::Push(uint8_t data) noexcept
+	{
+		m_tMemory[0x0100 + S] = data;
+		--S;
+	}
+
+	inline uint8_t CPU::Pop() noexcept
+	{
+		auto t = m_tMemory[0x0100 + S];
+		++S;
+
+		return t;
+	}
 
 	void CPU::RunTick()
 	{
@@ -139,6 +171,15 @@ namespace LiteCPU
 				//Run OPCODE
 				switch (m_uOpCode)
 				{
+					case JSR:
+						//store HIGH address
+						this->Push((PC + 2) >> 8);						
+						break;
+
+					case PHA:
+						this->Push(this->A);
+						break;
+
 					case ROR:
 					{						
 						bool newCarry = A & 0x01;
@@ -156,11 +197,25 @@ namespace LiteCPU
 						m_uStage = 0;
 						break;
 					}						
-
+					
 					case JMP:
 					case STA:
+					case LDA_ABS:
 						//read low byte
-						this->m_uBus = m_tMemory[PC++];
+						this->m_uBus = (this->m_uBus & 0xFF00) | m_tMemory[PC++];
+						break;
+
+					case TXS:
+						this->S = this->X;
+
+						m_uStage = 0;
+						break;
+
+					case LDX:
+						this->X = m_tMemory[PC++];
+						this->UpdateRegisterFlags(this->X);
+
+						m_uStage = 0;
 						break;
 
 					case LDA:
@@ -168,7 +223,7 @@ namespace LiteCPU
 						this->UpdateRegisterFlags(this->A);
 
 						m_uStage = 0;
-						break;
+						break;					
 
 					//do nothing?
 					case NOP:
@@ -185,10 +240,21 @@ namespace LiteCPU
 			case 2:
 				switch (m_uOpCode)
 				{
+					case JSR:
+						//store LOW address
+						this->Push((PC + 2) & 0x00FF);						
+						break;
+
+					case PHA:
+						//takes 3 cycles... but NOP here...
+						m_uStage = 0;
+						break;
+
 					case JMP:
-					case STA:					
+					case STA:		
+					case LDA_ABS:
 						//read high byte
-						this->m_uBus = this->m_uBus | (m_tMemory[PC++] << 8);
+						this->m_uBus = (this->m_uBus & 0x00FF) | (m_tMemory[PC++] << 8);
 						break;
 
 					default:
@@ -201,6 +267,11 @@ namespace LiteCPU
 			case 3:
 				switch (m_uOpCode)
 				{
+					case JSR:
+						//read low byte
+						this->m_uBus = (this->m_uBus & 0xFF00) | m_tMemory[PC++];
+						break;
+
 					case JMP:
 						this->PC = this->m_uBus;
 						m_uStage = 0;
@@ -211,8 +282,49 @@ namespace LiteCPU
 						m_uStage = 0;
 						break;
 
+					case LDA_ABS:
+						this->A = m_tMemory[this->m_uBus];
+						this->UpdateRegisterFlags(this->A);
+
+						m_uStage = 0;
+						break;
+
 					default:
 						spdlog::error("[CPU::RunTick] Unknown opcode - stage 3: {:x}", m_uOpCode);
+						m_kState = States::HALT;
+						break;
+				}
+				break;
+
+			case 4:
+				switch (m_uOpCode)
+				{
+					case JSR:
+						//read HIGH byte
+					
+					{
+						uint16_t tmp = m_tMemory[PC++];
+						this->m_uBus = (m_uBus & 0x00FF) | (tmp << 8);
+						break;
+					}												
+
+					default:
+						spdlog::error("[CPU::RunTick] Unknown opcode - stage 4: {:x}", m_uOpCode);
+						m_kState = States::HALT;						
+						break;
+				}			
+				break;
+
+			case 5:
+				switch (m_uOpCode)
+				{
+					case JSR:											
+						this->PC = this->m_uBus;
+						m_uStage = 0;
+						break;
+
+					default:
+						spdlog::error("[CPU::RunTick] Unknown opcode - stage 5: {:x}", m_uOpCode);
 						m_kState = States::HALT;
 						break;
 				}
@@ -222,14 +334,50 @@ namespace LiteCPU
 
 	void CPU::ResetTick()
 	{
+		//overcomplicate reset... but it is fun....
+		//I could not find any detailed info of the reset cycle...so lets just imagine is something like that
+		//Imagine a small program inside that do it byte a byte set PC
 		switch (m_uStage)
 		{
 			case 0:
 				this->F = 0x36;
 				break;
 
+			case 1:
+				//set low byte only
+				this->m_uBus = (m_uBus & 0xFF00) | 0xFC;
+				break;
+
+			case 2:
+				//set high byte only
+				this->m_uBus |= 0xFF00;
+				break;
+
+			case 3:
+				this->A = m_tMemory[m_uBus];
+				break;
+
+			case 4:
+				//set low byte only
+				PC = (PC & 0xFF00) | this->A;
+				break;
+
+			case 5:				
+				this->m_uBus = (m_uBus & 0xFF00) | 0xFD;
+				break;
+
+			case 6:
+				//read high byte
+				this->m_uBus = this->m_uBus | 0xFF00;
+				break;
+
+			case 7:
+				this->A = m_tMemory[m_uBus];
+				break;			
+
 			case 8:		
-				PC = ((uint16_t)(m_tMemory[0xFFFD]) << 8) | (m_tMemory[0xFFFC]);
+				//PC = ((uint16_t)(m_tMemory[0xFFFD]) << 8) | (m_tMemory[0xFFFC]);
+				PC = (((uint16_t)this->A) << 8) | (0x00FF & PC);
 				m_kState = States::RUN;
 
 				m_uStage = 0;

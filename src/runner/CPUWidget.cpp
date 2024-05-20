@@ -22,21 +22,22 @@ void CPUWidget::Display()
 {
 	assert(m_pCPU);
 
-	ImGui::SetNextWindowSize(ImVec2{393, 100}, ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2{473, 100}, ImGuiCond_Always);
 
 	if (ImGui::Begin("CPU Controller"))
 	{	
 		fmt::memory_buffer input;
 
-		if (ImGui::BeginTable("CPU", 7, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoSavedSettings))
+		if (ImGui::BeginTable("CPU", 8, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoSavedSettings))
 		{
-			ImGui::TableSetupColumn("PC", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 58);
-			ImGui::TableSetupColumn("AC", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 35);
-			ImGui::TableSetupColumn("XR", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 35);
-			ImGui::TableSetupColumn("YR", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 35);
-			ImGui::TableSetupColumn("SR", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 35);
-			ImGui::TableSetupColumn("SP", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 35);
-			ImGui::TableSetupColumn("NV-BDIZC", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoSort, 80);
+			ImGui::TableSetupColumn("PC",		ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 58);
+			ImGui::TableSetupColumn("AC",		ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 35);
+			ImGui::TableSetupColumn("XR",		ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 35);
+			ImGui::TableSetupColumn("YR",		ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 35);
+			ImGui::TableSetupColumn("SR",		ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 35);
+			ImGui::TableSetupColumn("SP",		ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 35);
+			ImGui::TableSetupColumn("NV-BDIZC", ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder, 99);
+			ImGui::TableSetupColumn("MBus", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoSort, 58);
 			ImGui::TableHeadersRow();
 
 #if 0
@@ -112,6 +113,13 @@ void CPUWidget::Display()
 
 			ImGui::TableNextColumn();
 			ImGui::InputText("##FLAGS", &input[0], 9, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank);
+
+			input.clear();
+			fmt::format_to_n(std::back_inserter(input), 4, "{:04X}", m_pCPU->GetBus());
+			input[4] = '\0';
+
+			ImGui::TableNextColumn();
+			ImGui::InputText("##BUS", &input[0], 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank | ImGuiInputTextFlags_ReadOnly);
 			
 			ImGui::EndTable();
 		}

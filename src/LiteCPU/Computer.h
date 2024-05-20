@@ -47,12 +47,17 @@ namespace LiteCPU
 	class CPU
 	{
 		public:
+			//program counter
 			uint16_t PC;
+
 			uint8_t A;
 			uint8_t X;
 			uint8_t Y;
+
+			//stack pointer
 			uint8_t S;
 
+			//flags
 			uint8_t F;
 
 			CPU();
@@ -78,9 +83,17 @@ namespace LiteCPU
 				return m_uStage;
 			}
 
+			inline uint16_t GetBus() const noexcept
+			{
+				return m_uBus;
+			}
+
 		private:
 			void ResetTick();
 			void RunTick();
+
+			inline void Push(uint8_t data) noexcept;
+			inline uint8_t Pop() noexcept;
 
 			inline void ClearFlag(uint8_t bit) noexcept;
 			inline void SetFlag(uint8_t bit) noexcept;
