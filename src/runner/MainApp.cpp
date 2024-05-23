@@ -107,6 +107,7 @@ MainApp::MainApp()
 	//m_tCPU.LoadRom("../BenEater/keyboard.bin", 0x8000);
 
 	m_wCPU.SetCPU(&m_tCPU);
+	m_wDebug.SetCPU(&m_tCPU);
 }
 
 bool MainApp::Display()
@@ -136,14 +137,7 @@ bool MainApp::Display()
 	ImGui::Begin("MainWindow", nullptr, window_flags);
 
 	//restore padding, rouding and border
-	ImGui::PopStyleVar(3);
-
-	// Submit the DockSpace
-	ImGuiIO &io = ImGui::GetIO();
-
-	ImGuiID dockspaceID = ImGui::GetID("MainDockSpace");		
-
-	ImVec2 currentViewPortSize = viewport->WorkSize;	
+	ImGui::PopStyleVar(3);		
 
 	if (ImGui::BeginMenuBar())
 	{
@@ -192,6 +186,7 @@ bool MainApp::Display()
 	ImGui::End();	
 
 	m_wCPU.Display();
+	m_wDebug.Display();
 
 	if (m_fShowAbout)
 		ShowAboutWindow(&m_fShowAbout);

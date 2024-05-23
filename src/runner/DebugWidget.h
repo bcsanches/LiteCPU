@@ -15,16 +15,14 @@ namespace LiteCPU
 	class CPU;
 }
 
-constexpr auto CPU_WIDGET_WIDTH = 473;
 
-
-class CPUWidget
+class DebugWidget
 {
 	public:
 		void Display();
 		void Update() {};
 
-		~CPUWidget() = default;
+		~DebugWidget() = default;
 
 		void SetCPU(LiteCPU::CPU *cpu) noexcept
 		{
@@ -33,9 +31,4 @@ class CPUWidget
 
 	private:
 		LiteCPU::CPU	*m_pCPU = nullptr;
-
-		int				m_iTicks = 20;
-		float			m_fpTicksToRun = 0;
-
-		bool			m_fPaused = true;
 };

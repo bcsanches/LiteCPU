@@ -16,6 +16,7 @@
 
 #include "CPUWidget.h"
 #include "Computer.h"
+#include "DebugWidget.h"
 
 #define LITECPU_DISABLE_CLASS_COPY_AND_MOVE(X)	\
 	X(const X &) = delete;						\
@@ -46,6 +47,7 @@ class MainApp
 		ImVec2	m_vec2ViewportSize = { 0, 0 };
 
 		CPUWidget	m_wCPU;
+		DebugWidget m_wDebug;
 
 		bool	m_fShowAbout = false;
 		bool	m_fShowDemo = false;

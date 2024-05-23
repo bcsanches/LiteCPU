@@ -2,6 +2,8 @@
 add_executable(Runner 
 	CPUWidget.cpp
 	CPUWidget.h
+	DebugWidget.cpp
+	DebugWidget.h
 	main.cpp 
 	MainApp.cpp
 	MainApp.h

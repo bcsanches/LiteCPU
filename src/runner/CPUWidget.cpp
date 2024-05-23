@@ -22,7 +22,10 @@ void CPUWidget::Display()
 {
 	assert(m_pCPU);
 
-	ImGui::SetNextWindowSize(ImVec2{473, 0}, ImGuiCond_Always);
+	const ImGuiViewport *main_viewport = ImGui::GetMainViewport();
+
+	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2{CPU_WIDGET_WIDTH, 0}, ImGuiCond_Always);
 
 	if (ImGui::Begin("CPU Controller"))
 	{	
