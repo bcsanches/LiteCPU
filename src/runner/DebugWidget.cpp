@@ -27,6 +27,10 @@ void PrintBreakpointLabel(char *dest, const Breakpoint &bp)
         sprintf(dest, "ADDRESS %04X", bp.m_uAddress);        
 }
 
+#define TABLE_MODE
+
+constexpr auto MIN_ROWS = 10;
+
 void DebugWidget::Display()
 {
 	assert(m_pCPU);
@@ -41,9 +45,20 @@ void DebugWidget::Display()
         ImGui::Text("Breakpoints");
 
 #ifdef TABLE_MODE
-        if (ImGui::BeginTable("Breakpoints", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
+
+        // When using ScrollX or ScrollY we need to specify a size for our table container!
+        // Otherwise by default the table will fit all available space, like a BeginChild() call.
+        ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * (MIN_ROWS + 1));
+        if (ImGui::BeginTable("Breakpoints", 4, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, outer_size))
         {
 #if 1
+            ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
+            ImGui::TableSetupColumn("Id");
+            ImGui::TableSetupColumn("Type");
+            ImGui::TableSetupColumn("Data");
+            ImGui::TableSetupColumn("Disabled");
+            ImGui::TableHeadersRow();
+
             int count = 0;
 
             bool itemAlreadySelected = m_iSelected >= 0;
@@ -85,8 +100,29 @@ void DebugWidget::Display()
                     ImGui::Text(label);
                 }
 
+                ImGui::TableNextColumn();
+                
+                ImGui::Text(item.m_fDisabled ? "Yes" : "");
+
                 ++count;
             }
+
+            for(;count < MIN_ROWS; ++count)
+            {                
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("");
+
+                ImGui::TableNextColumn();
+                ImGui::Text("");
+
+                ImGui::TableNextColumn();
+                ImGui::Text("");
+
+                ImGui::TableNextColumn();
+                ImGui::Text("");
+            }
+
             ImGui::EndTable();
 
 #else
@@ -108,6 +144,7 @@ void DebugWidget::Display()
         }
 #endif
 
+#if 0
         char label[128];
 
         if (m_iSelected >= 0)
@@ -135,6 +172,7 @@ void DebugWidget::Display()
             }
             ImGui::EndCombo();
         }            
+#endif
 
         if (ImGui::Button("New"))
         {
@@ -162,6 +200,22 @@ void DebugWidget::Display()
                     --m_iSelected;
             }
         }
+
+        if (m_iSelected >= 0)
+        {            
+            ImGui::SameLine();
+
+            if (m_vecBreakpoints[m_iSelected].m_fDisabled)
+            {
+                if (ImGui::Button("Enable"))
+                    m_vecBreakpoints[m_iSelected].m_fDisabled = false;                
+            }
+            else
+            {
+                if (ImGui::Button("Disable"))
+                    m_vecBreakpoints[m_iSelected].m_fDisabled = true;
+            }                                 
+        }        
 	}
 
 	ImGui::End();	

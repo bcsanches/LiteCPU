@@ -26,6 +26,8 @@ struct Breakpoint
 
 	LiteCPU::OpCodes	m_kOpCode;
 	uint16_t			m_uAddress;
+
+	bool				m_fDisabled = false;
 };
 
 class DebugWidget
