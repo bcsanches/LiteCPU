@@ -10,11 +10,23 @@
 
 #pragma once
 
-namespace LiteCPU
-{
-	class CPU;
-}
+#include <vector>
 
+#include "Computer.h"
+
+enum class BreakpointTypes
+{
+	OPCODE,
+	ADDRESS
+};
+
+struct Breakpoint
+{
+	BreakpointTypes		m_kType;
+
+	LiteCPU::OpCodes	m_kOpCode;
+	uint16_t			m_uAddress;
+};
 
 class DebugWidget
 {
@@ -31,4 +43,8 @@ class DebugWidget
 
 	private:
 		LiteCPU::CPU	*m_pCPU = nullptr;
+
+		std::vector<Breakpoint> m_vecBreakpoints;
+
+		int						m_iSelected = -1;
 };

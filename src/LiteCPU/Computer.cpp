@@ -14,20 +14,6 @@
 
 #include <spdlog/spdlog.h>
 
-enum OpCodes
-{
-	JSR		= 0x20,
-	PHA		= 0x48,
-	JMP		= 0x4C,
-	ROR		= 0x6A,
-	STA		= 0x8D,
-	TXS		= 0x9A,
-	LDX		= 0xA2,
-	LDA		= 0xA9,
-	LDA_ABS = 0xAD,
-	NOP		= 0xEA
-};
-
 enum BitFlags
 {
 	BIT_NEGATIVE	= 0x80,
@@ -42,6 +28,45 @@ enum BitFlags
 
 namespace LiteCPU
 {	
+	const char *TryGetOpCodeName(const OpCodes code) noexcept
+	{
+		switch (code)
+		{
+			case JSR:
+				return "JSR";
+
+			case PHA:
+				return "PHA";
+
+			case JMP:
+				return "JMP";
+
+			case ROR:
+				return "ROR";
+
+			case STA:
+				return "STA";
+
+			case TXS:
+				return "TXS";
+
+			case LDX:
+				return "LDX";
+
+			case LDA:
+				return "LDA";
+
+			case LDA_ABS:
+				return "LDA_ABS";
+
+			case NOP:
+				return "NOP";
+
+			default:
+				return "???";
+		}		
+	}
+
 	CPU::CPU()
 	{
 		//empty
@@ -67,41 +92,7 @@ namespace LiteCPU
 
 	const char *CPU::GetOpCodeName() const noexcept
 	{
-		switch (m_uOpCode)
-		{
-			case JSR:
-				return "JSR";
-
-			case PHA:
-				return "PHA";
-
-			case JMP:
-				return "JMP";
-
-			case ROR:
-				return "ROR";
-
-			case STA:
-				return "STA";
-
-			case TXS:
-				return "TXS";
-
-			case LDX:
-				return "LDX";
-
-			case LDA:			
-				return "LDA";			
-
-			case LDA_ABS:
-				return "LDA_ABS";				
-
-			case NOP:
-				return "NOP";
-
-			default:
-				return "???";
-		}
+		return TryGetOpCodeName(static_cast<OpCodes>(m_uOpCode));
 	}
 
 	void CPU::Tick()

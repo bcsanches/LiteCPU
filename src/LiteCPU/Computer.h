@@ -24,6 +24,22 @@ namespace LiteCPU
 		HALT
 	};
 
+	enum OpCodes
+	{
+		JSR = 0x20,
+		PHA = 0x48,
+		JMP = 0x4C,
+		ROR = 0x6A,
+		STA = 0x8D,
+		TXS = 0x9A,
+		LDX = 0xA2,
+		LDA = 0xA9,
+		LDA_ABS = 0xAD,
+		NOP = 0xEA
+	};
+
+	const char *TryGetOpCodeName(const OpCodes code) noexcept;
+
 	class MemoryBus
 	{
 		public:
