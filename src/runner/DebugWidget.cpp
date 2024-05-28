@@ -27,9 +27,60 @@ void PrintBreakpointLabel(char *dest, const Breakpoint &bp)
         sprintf(dest, "ADDRESS %04X", bp.m_uAddress);        
 }
 
-#define TABLE_MODE
-
 constexpr auto MIN_ROWS = 10;
+
+static void ShowEditBreakpointdialog(bool &p_open)
+{
+    static int selectedType = 0;
+
+    constexpr auto dialogName = "Add new breakpoint";
+
+    ImGui::OpenPopup(dialogName);
+
+    if (ImGui::BeginPopupModal(dialogName, &p_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
+    {
+        const char *types[] = { "OPCODE", "ADDRESS", nullptr };
+
+        if (ImGui::BeginCombo("Type", types[selectedType]))
+        {
+            for (int i = 0; types[i]; ++i)
+            {
+                if (ImGui::Selectable(types[i], i == selectedType))
+                    selectedType = i;
+            }
+            ImGui::EndCombo();
+        }        
+        ImGui::Separator();
+
+        if (static_cast<BreakpointTypes>(selectedType) == BreakpointTypes::OPCODE)
+        {
+            //add magic enum and list opcodes
+        }
+        else
+        {
+            static int address = 0;
+
+            if (ImGui::InputInt("Address", &address, 1, 100, ImGuiInputTextFlags_CharsHexadecimal))
+            {
+                address = std::max(0, address);
+                address = std::min(0xFFFF, address);
+            }
+        }
+
+        bool disabled = false;
+        ImGui::Checkbox("Disabled", &disabled);
+
+        if (ImGui::Button("Ok"))
+            p_open = false;
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel"))
+            p_open = false;
+
+        ImGui::EndPopup();
+    }
+}
 
 void DebugWidget::Display()
 {
@@ -44,14 +95,11 @@ void DebugWidget::Display()
 	{	
         ImGui::Text("Breakpoints");
 
-#ifdef TABLE_MODE
-
         // When using ScrollX or ScrollY we need to specify a size for our table container!
         // Otherwise by default the table will fit all available space, like a BeginChild() call.
         ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * (MIN_ROWS + 1));
         if (ImGui::BeginTable("Breakpoints", 4, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, outer_size))
         {
-#if 1
             ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
             ImGui::TableSetupColumn("Id");
             ImGui::TableSetupColumn("Type");
@@ -106,7 +154,7 @@ void DebugWidget::Display()
 
                 ++count;
             }
-
+#if 0
             for(;count < MIN_ROWS; ++count)
             {                
                 ImGui::TableNextRow();
@@ -122,68 +170,23 @@ void DebugWidget::Display()
                 ImGui::TableNextColumn();
                 ImGui::Text("");
             }
-
+#endif
             ImGui::EndTable();
-
-#else
-            for (int i = 0; i < 10; i++)
-            {
-                char label[32];
-                sprintf(label, "Item %d", i);
-
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::Selectable(label, &selected[i], ImGuiSelectableFlags_SpanAllColumns);
-                ImGui::TableNextColumn();
-                ImGui::Text("Some other contents");
-                ImGui::TableNextColumn();
-                ImGui::Text("123456");
-            }
-            ImGui::EndTable();
-#endif
         }
-#endif
-
-#if 0
-        char label[128];
-
-        if (m_iSelected >= 0)
-        {
-            PrintBreakpointLabel(label, m_vecBreakpoints[m_iSelected]);
-        }
-
-        if (ImGui::BeginCombo("Breakpoints", m_iSelected >= 0 ? label : nullptr, 0))
-        {
-            int count = 0;
-            for (auto &item : m_vecBreakpoints)
-            {
-                const bool is_selected = (count == m_iSelected);
-
-                PrintBreakpointLabel(label, item);
-
-                if (ImGui::Selectable(label, is_selected))
-                    m_iSelected = count;
-
-                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                if (is_selected)
-                    ImGui::SetItemDefaultFocus();
-
-                ++count;
-            }
-            ImGui::EndCombo();
-        }            
-#endif
 
         if (ImGui::Button("New"))
         {
+#if 0
             static uint16_t counter = 5;
 
-            m_vecBreakpoints.push_back(Breakpoint{ BreakpointTypes::ADDRESS, LiteCPU::OpCodes::NOP, static_cast<uint16_t>(0x0010 + counter)});
+            m_vecBreakpoints.push_back(Breakpoint{ BreakpointTypes::ADDRESS, LiteCPU::OpCodes::NOP, static_cast<uint16_t>(0x0010 + counter) });
 
             if (m_iSelected < 0)
                 m_iSelected = 0;
 
             ++counter;
+#endif
+            m_fAddBreakpointDialog = true;
         }
 
         ImGui::SameLine();
@@ -215,8 +218,15 @@ void DebugWidget::Display()
                 if (ImGui::Button("Disable"))
                     m_vecBreakpoints[m_iSelected].m_fDisabled = true;
             }                                 
-        }        
+        }    
 	}
 
 	ImGui::End();	
+
+#if 1
+    if (m_fAddBreakpointDialog)
+    {
+        ShowEditBreakpointdialog(m_fAddBreakpointDialog);
+    }    
+#endif
 }

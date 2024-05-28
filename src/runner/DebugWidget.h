@@ -16,7 +16,7 @@
 
 enum class BreakpointTypes
 {
-	OPCODE,
+	OPCODE = 0,
 	ADDRESS
 };
 
@@ -49,4 +49,6 @@ class DebugWidget
 		std::vector<Breakpoint> m_vecBreakpoints;
 
 		int						m_iSelected = -1;
+
+		bool					m_fAddBreakpointDialog = false;
 };

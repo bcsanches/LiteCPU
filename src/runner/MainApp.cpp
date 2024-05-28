@@ -60,15 +60,22 @@ static void ImGuiDemoFunc()
 
 static void ShowAboutWindow(bool *p_open)
 {
-	if (ImGui::Begin("About Lite CPU", p_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
+	constexpr auto dialogName = "About Lite CPU";
+
+	ImGui::OpenPopup(dialogName);
+
+	if (ImGui::BeginPopupModal(dialogName, p_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
 	{
 		ImGui::Text("Lite CPU %s", LITECPU_VERSION);
 		ImGui::Separator();
 		ImGui::Text("By Bruno C. Sanches");
 		ImGui::Text("Licensed under the Mozilla License, see LICENSE for more information.");
-	}
 
-	ImGui::End();
+		if (ImGui::Button("Close"))
+			*p_open = false;			
+
+		ImGui::EndPopup();
+	}	
 }
 
 MainApp::MainApp()
