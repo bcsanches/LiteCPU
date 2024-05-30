@@ -43,6 +43,12 @@ class DebugWidget
 			m_pCPU = cpu;
 		}
 
+		const Breakpoint *TryFindOpcodeBreakPoint(LiteCPU::OpCodes opcode) const noexcept;
+		const Breakpoint *TryFindAddressBreakPoint(uint16_t address) const noexcept;
+
+	private:
+		bool ShowEditBreakpointdialog(bool &p_open);
+
 	private:
 		LiteCPU::CPU	*m_pCPU = nullptr;
 
@@ -51,4 +57,7 @@ class DebugWidget
 		int						m_iSelected = -1;
 
 		bool					m_fAddBreakpointDialog = false;
+		bool					m_fEditBreakpointDialog = false;
+
+		bool					m_fInitEditDialog = false;
 };
