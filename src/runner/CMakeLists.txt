@@ -16,6 +16,7 @@ target_include_directories(Runner
     PRIVATE ${LiteCPU_SOURCE_DIR}/contrib/fmt/include
     PRIVATE ${LiteCPU_SOURCE_DIR}/contrib/SDL/include
     PRIVATE ${LiteCPU_SOURCE_DIR}/contrib/spdlog/include
+	PRIVATE ${LiteCPU_SOURCE_DIR}/contrib/magic_enum/include
     PRIVATE ${LiteCPU_SOURCE_DIR}/src/LiteCPU/
 )
 

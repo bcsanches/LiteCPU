@@ -14,6 +14,9 @@
 
 #include <fmt/format.h>
 
+#define MAGIC_ENUM_RANGE_MAX 256
+#include <magic_enum/magic_enum.hpp>
+
 #include "imgui.h"
 
 #include "Computer.h"
@@ -30,15 +33,15 @@ void PrintBreakpointLabel(char *dest, const Breakpoint &bp)
 constexpr auto MIN_ROWS = 10;
 
 static void ShowEditBreakpointdialog(bool &p_open)
-{
-    static int selectedType = 0;
-
+{    
     constexpr auto dialogName = "Add new breakpoint";
 
     ImGui::OpenPopup(dialogName);
 
     if (ImGui::BeginPopupModal(dialogName, &p_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse))
     {
+        static int selectedType = 0;
+
         const char *types[] = { "OPCODE", "ADDRESS", nullptr };
 
         if (ImGui::BeginCombo("Type", types[selectedType]))
@@ -54,7 +57,23 @@ static void ShowEditBreakpointdialog(bool &p_open)
 
         if (static_cast<BreakpointTypes>(selectedType) == BreakpointTypes::OPCODE)
         {
+            static int selectedOpcode = 0;
+
             //add magic enum and list opcodes
+            auto opcodes = magic_enum::enum_names<LiteCPU::OpCodes>();
+
+            constexpr auto opcodesCount = magic_enum::enum_count<LiteCPU::OpCodes>();
+
+            if (ImGui::BeginCombo("Opcode", opcodes[selectedOpcode].data()))
+            {
+                for (int i = 0; i < opcodesCount; ++i)
+                {
+                    if (ImGui::Selectable(opcodes[i].data(), i == selectedOpcode))
+                        selectedOpcode = i;
+                }
+
+                ImGui::EndCombo();
+            }            
         }
         else
         {
