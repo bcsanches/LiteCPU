@@ -14,6 +14,7 @@
 
 #include <fmt/format.h>
 
+//see https://github.com/Neargye/magic_enum/blob/master/doc/limitations.md#enum-range
 #define MAGIC_ENUM_RANGE_MAX 256
 #include <magic_enum/magic_enum.hpp>
 
@@ -294,23 +295,7 @@ void DebugWidget::Display()
 
 				++count;
 			}
-#if 0
-			for(;count < MIN_ROWS; ++count)
-			{                
-				ImGui::TableNextRow();
-				ImGui::TableNextColumn();
-				ImGui::Text("");
 
-				ImGui::TableNextColumn();
-				ImGui::Text("");
-
-				ImGui::TableNextColumn();
-				ImGui::Text("");
-
-				ImGui::TableNextColumn();
-				ImGui::Text("");
-			}
-#endif
 			ImGui::EndTable();
 		}
 
