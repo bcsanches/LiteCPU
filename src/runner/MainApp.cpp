@@ -113,7 +113,8 @@ MainApp::MainApp()
 	//m_tCPU.LoadRom("../BenEater/hello-world-final.bin", 0x8000);
 	//m_tCPU.LoadRom("../BenEater/keyboard.bin", 0x8000);
 
-	m_wCPU.SetCPU(&m_tCPU);
+	m_wCPU.Init(m_tCPU, m_wDebug);
+
 	m_wDebug.SetCPU(&m_tCPU);
 }
 

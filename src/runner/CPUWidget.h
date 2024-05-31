@@ -15,6 +15,9 @@ namespace LiteCPU
 	class CPU;
 }
 
+class DebugWidget;
+struct Breakpoint;
+
 constexpr auto CPU_WIDGET_WIDTH = 473;
 
 
@@ -26,16 +29,23 @@ class CPUWidget
 
 		~CPUWidget() = default;
 
-		void SetCPU(LiteCPU::CPU *cpu) noexcept
+		void Init(LiteCPU::CPU &cpu, DebugWidget &debugWidget) noexcept
 		{
-			m_pCPU = cpu;
-		}
+			m_pCPU = &cpu;
+			m_pDebugWidget = &debugWidget;
+		}		
 
 	private:
-		LiteCPU::CPU	*m_pCPU = nullptr;
+		void OnBreakpointHit(const Breakpoint &breakpoint);
+
+	private:
+		LiteCPU::CPU		*m_pCPU = nullptr;
+		DebugWidget	*m_pDebugWidget = nullptr;
 
 		int				m_iTicks = 20;
 		float			m_fpTicksToRun = 0;
 
 		bool			m_fPaused = true;
+
+		bool			m_fBreakpointHit = false;
 };

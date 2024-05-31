@@ -17,6 +17,7 @@
 #include "imgui.h"
 
 #include "Computer.h"
+#include "DebugWidget.h"
 
 void CPUWidget::Display()
 {
@@ -133,7 +134,7 @@ void CPUWidget::Display()
 
 		ImGui::Separator();
 #endif
-
+		
 		if (ImGui::Button("Start"))
 		{
 			m_fPaused = false;
@@ -176,6 +177,18 @@ void CPUWidget::Display()
 		if (ImGui::InputInt("Ticks per second", &m_iTicks))
 		{
 			m_iTicks = std::max(0, m_iTicks);
+		}		
+
+		if (m_fBreakpointHit)
+		{
+			ImGui::Separator();
+
+			ImGui::Text("Breakpoint hit");
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Clear"))
+				m_fBreakpointHit = false;			
 		}
 	}
 
@@ -191,6 +204,35 @@ void CPUWidget::Display()
 		{
 			m_pCPU->Tick();
 			m_fpTicksToRun -= 1;
+
+			if (m_pCPU->GetState() != LiteCPU::States::RUN)
+				continue;
+
+			if (m_pCPU->GetStage() == 1)
+			{
+				//just have fetch instruction
+				auto opcode = static_cast<LiteCPU::OpCodes>(m_pCPU->GetOpCode());
+
+				if(auto breakpoint = m_pDebugWidget->TryFindOpcodeBreakPoint(opcode))				
+				{
+					this->OnBreakpointHit(*breakpoint);
+					break;
+				}
+			}
+
+			if(auto breakpoint = m_pDebugWidget->TryFindAddressBreakPoint(m_pCPU->PC))			
+			{
+				this->OnBreakpointHit(*breakpoint);
+				break;
+			}
 		}
-	}
+	}	
+}
+
+void CPUWidget::OnBreakpointHit(const Breakpoint &breakpoint)
+{
+	m_fPaused = true;
+	m_fBreakpointHit = true;
+
+	m_pDebugWidget->SelectBreakpoint(breakpoint);
 }

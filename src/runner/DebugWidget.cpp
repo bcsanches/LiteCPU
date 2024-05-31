@@ -223,6 +223,18 @@ bool DebugWidget::ShowEditBreakpointdialog(bool &p_open)
 	return result;
 }
 
+void DebugWidget::SelectBreakpoint(const Breakpoint &breakpoint) noexcept
+{
+	for (int i = 0, sz = (int)m_vecBreakpoints.size(); i < sz; ++i)
+	{
+		if (&m_vecBreakpoints[i] == &breakpoint)
+		{
+			m_iSelected = i;
+			break;
+		}
+	}
+}
+
 void DebugWidget::Display()
 {
 	assert(m_pCPU);

@@ -104,6 +104,11 @@ namespace LiteCPU
 				return m_uBus;
 			}
 
+			inline States GetState() const noexcept
+			{
+				return m_kState;
+			}
+
 		private:
 			void ResetTick();
 			void RunTick();

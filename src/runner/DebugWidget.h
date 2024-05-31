@@ -46,6 +46,8 @@ class DebugWidget
 		const Breakpoint *TryFindOpcodeBreakPoint(LiteCPU::OpCodes opcode) const noexcept;
 		const Breakpoint *TryFindAddressBreakPoint(uint16_t address) const noexcept;
 
+		void SelectBreakpoint(const Breakpoint &breakpoint) noexcept;
+
 	private:
 		bool ShowEditBreakpointdialog(bool &p_open);
 
